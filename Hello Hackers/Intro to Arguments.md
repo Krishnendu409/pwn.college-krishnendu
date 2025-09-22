@@ -6,17 +6,17 @@
 **Flag:** `pwn.college{813EE-00GNaHrkob9ZqbdM29JVE.QX4YjM1wSN0EzNzEzW}`
 
 ## Steps
-1. Connected via SSH: `ssh -i ~/key hacker@dojo.pwn.college`.
-2. Typed the command with the argument: `hello hackers`.
+1. Logged in via SSH.
+2. Typed `hello hackers` at the prompt.
 3. Copied the flag from the output.
 
 ## Explanation
-Commands can take arguments that modify their behavior. Here, the `hello` program required a single argument `hackers`. The shell splits input into command and arguments. The program read this argument and returned the flag. This demonstrates how arguments work and how they are passed to programs.
+This challenge showed how commands can take arguments. Here, `hackers` was an argument to `hello`. The shell splits what you type into the command and arguments, and the program returned the flag based on that.
 
 ## What I learned
-- How shell splits input into command + arguments.
-- Arguments can change the output of a program.
-- Linux commands and arguments are case-sensitive.
+- How to pass arguments to commands.
+- How Linux parses command + arguments.
+- That small differences (like case) can matter.
 
 ## References
 Did not use any references for this challenge.
