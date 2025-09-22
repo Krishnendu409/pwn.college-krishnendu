@@ -3,7 +3,7 @@
 **Date:** 2025-09-22
 
 ## My solve
-**Flag:** `pwn.college{sQPNpNBFIzIxw1pWnqI3qUYjYp4.0lNzEzNxwSN0EzNzEzW}`
+**Flag:** `pwn.college{gpK8CJP2puAmJUMzUfDdjCc6voZ.QX3YjM1wSN0EzNzEzW}`
 
 ## Steps
 1. Logged in via SSH.
