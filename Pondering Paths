@@ -3,7 +3,7 @@
 **Date:** 2025-09-22
 
 ## My solve
-**Flag:** `pwn.college{<paste-your-flag-here>}`
+**Flag:** `pwn.college{0wjASxTvcg3yNTMcFDnmB_2MUPP.QX4cTO0wSN0EzNzEzW}`
 
 ## How I solved it
 The challenge description mentioned that a binary called `pwn` was placed in the root directory `/`. Since the level was about absolute paths, I realized the way to run it was to type `/pwn`. As soon as I did that, the flag was printed.
