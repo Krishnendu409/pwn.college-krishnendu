@@ -1,0 +1,18 @@
+# The Root (Pondering Paths)
+*Module:* Pondering Paths (pwn.college)  
+**Date:** 2025-09-22
+
+## My solve
+**Flag:** `pwn.college{<paste-your-flag-here>}`
+
+## How I solved it
+The challenge description mentioned that a binary called `pwn` was placed in the root directory `/`. Since the level was about absolute paths, I realized the way to run it was to type `/pwn`. As soon as I did that, the flag was printed.
+
+## Why this works
+Absolute paths always start with `/`, which is the filesystem root. By typing `/pwn`, the shell looks exactly in `/` and runs the binary there, without relying on the current directory or PATH.
+
+## What I learned
+I learned the difference between absolute and relative paths. Writing `/pwn`, `./pwn`, or just `pwn` can mean completely different things depending on where I am in the filesystem.
+
+## References
+Did not use any references for this challenge.
