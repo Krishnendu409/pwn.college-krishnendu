@@ -1,4 +1,4 @@
-# The Root (Pondering Paths)
+# The Root 
 *Module:* Pondering Paths (pwn.college)  
 **Date:** 2025-09-22
 
@@ -16,3 +16,21 @@ I learned the difference between absolute and relative paths. Writing `/pwn`, `.
 
 ## References
 Did not use any references for this challenge.
+
+# Program and absolute paths
+## My solve
+**Flag:** `pwn.college{wovuX0qJcN-Ay7TQT78kErT36iU.QX1QTN0wSN0EzNzEzW}`
+
+## How I solved it
+This challenge reinforced the concept of absolute paths. The description mentioned a program placed somewhere in `/challenge`. I realized that to run it, I just needed to type the full path from root. Once I entered `/challenge/run` at the prompt, the flag appeared instantly. It was straightforward because the level focused on understanding absolute paths.
+
+## Why this works
+An absolute path begins with `/` and points directly to a file or directory from the root. Using `/challenge/run` makes sure the shell executes exactly that binary, without depending on the current working directory or PATH.
+
+## What I learned
+I learned to distinguish between absolute and relative paths and why absolute paths are useful for running programs reliably. It also showed me that just knowing the program name isn’t enough if you aren’t in the right location or if it isn’t in PATH.
+
+## References
+Did not use any references for this challenge.
+
+
