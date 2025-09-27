@@ -93,6 +93,27 @@ Used a single glob `*p*` to match all files containing `p`.
 Multiple globs can be combined in one word to match more complex patterns.
 
 ---
+## mixing-globs
+**Flag:** `pwn.college{A17prNCplfZb8K81E9qsW96EAmM.QX1IDO0wSN0EzNzEzW}`
+
+WSL terminal session:
+```wsl
+hacker@globbing~mixing-globs:~$ cd /challenge/files
+hacker@globbing~mixing-globs:/challenge/files$ ls
+amazing    challenging  educational  great  incredible  kind      magical  optimistic  queenly  splendid   uplifting   wonderful  youthful
+beautiful  delightful   fantastic    happy  jovial      laughing  nice     pwning      radiant  thrilling  victorious  xenial     zesty
+hacker@globbing~mixing-globs:/challenge/files$ /challenge/run [cep]*
+You got it! Here is your flag!
+pwn.college{A17prNCplfZb8K81E9qsW96EAmM.QX1IDO0wSN0EzNzEzW}
+```
+
+### My solve
+I combined a bracket glob `[cep]` with `*` to match all files that start with `c`, `e`, or `p`. This satisfied the challenge requirement to cover multiple files in a short globbed argument (≤3 characters for the challenge).
+
+### What I learned
+- You can mix `[]` with `*` to create flexible patterns that match a subset of files.  
+- Keep globbed arguments short to satisfy constraints in scripts.  
+- Mixing globs is powerful for selecting multiple files while excluding others.
 
 ## exclusionary-globbing
 **Flag:** `pwn.college{QlXLKbkUjrYokkFiLtY9MpCJ0Lu.QX2IDO0wSN0EzNzEzW}`
