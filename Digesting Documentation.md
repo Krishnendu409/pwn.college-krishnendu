@@ -172,10 +172,4 @@ Shell `help` builtin; challenge notes.
 
 ---
 
-## Module Notes
-This whole section covers the **Learning From Documentation** module.  
-- WSL sessions are preserved as ` ```wsl ` blocks.  
-- Flags are shown inline as code with backticks.  
-- I removed irrelevant error/noise lines per your request.  
 
-If you want this appended to the previous Commands/Filesystem box (one giant combined box), or exported to a single Markdown file, tell me and I’ll produce it exactly the same way. 
