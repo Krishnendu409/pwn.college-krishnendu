@@ -246,9 +246,4 @@ Intercepted the `pwn` output with `tee` to read the secret, then re-ran with the
 
 ---
 
-## Module Notes
-- All writeups above are part of the **Piping** module.  
-- Each section contains the literal “What the challenge asks,” a concise solution, the cleaned WSL session in a ```wsl``` block, the inline-flag, what I learned, and references.  
-- I included both **grepping-errors** and **filtering-with-grep-v** now.
 
-If you want this appended into your previous single-black-box file (so all modules live in one giant black box), tell me “combine” and I’ll merge them exactly (preserving formatting).
