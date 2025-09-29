@@ -194,11 +194,11 @@ Shell redirection idioms.
 ## Filtering with grep -v
 What the challenge asks: Use `grep -v` to filter out decoy lines and show only the real flag.
 
-**Flag:** `pwn.college{ULuF-btSpt3j0W-7nFc7EqQ9pTp.QX1BTO0wSN0EzNzEzW}`
+**Flag:** `pwn.college{o8WY2O_zkDCQ3COGVoihkbsc5F2.0FOxEzNxwSN0EzNzEzW}`
 
 ```wsl
-hacker@piping~filtering-with-grep-v:~$ /challenge/run | grep -v decoy
-pwn.college{ULuF-btSpt3j0W-7nFc7EqQ9pTp.QX1BTO0wSN0EzNzEzW}
+hacker@piping~filtering-with-grep-v:~$ /challenge/run | grep -v DECOY
+pwn.college{o8WY2O_zkDCQ3COGVoihkbsc5F2.0FOxEzNxwSN0EzNzEzW}
 ```
 
 ### My solve
