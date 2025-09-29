@@ -244,7 +244,35 @@ Intercepted the `pwn` output with `tee` to read the secret, then re-ran with the
 ### References
 `tee` docs; process substitution notes.
 
+
 ---
+# process-substitution
+
+**What the challenge asks:** Use **process substitution** to compare outputs of two commands as if they were files and find the real flag hidden among decoys.
+
+**Flag:** `pwn.college{UOsLFSS6Ls_p6VvA7GGfvApImgi.0lNwMDOxwSN0EzNzEzW}`
+
+## My solve
+I used input process substitution so `diff` could compare the output of two commands without creating temporary files:
+
+```bash
+diff <( /challenge/print_decoys ) <( /challenge/print_decoys_and_flag )
+```
+
+Explanation:
+- `<(command)` creates a **temporary named pipe** (`/dev/fd/...`) connected to the command's stdout.  
+- `diff` reads from these pseudo-files and shows the difference between the streams.  
+- The added line in `/challenge/print_decoys_and_flag` revealed the flag.
+
+## What I learned
+- `<(command)` lets you treat command output as a readable file argument.  
+- Useful for tools that accept filenames (like `diff`) to compare dynamic outputs without creating temp files.  
+- Process substitution uses **named pipes**, which exist only in memory while commands run.
+
+## References
+- `bash` process substitution documentation  
+- `diff` manpage
+
 # Process Substitution & FIFOs — Full Module Writeups
 
 ## process-substitution-for-input
