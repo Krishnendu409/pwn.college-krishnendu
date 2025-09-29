@@ -212,7 +212,7 @@ Used inverted match `grep -v decoy` to exclude noise lines containing the word â
 
 ---
 
-## Writing to Multiple Programs (tee + process substitution)
+## Duplicating piped data with tee
 What the challenge asks: Duplicate a stream into two programs simultaneously while intercepting the data locally (use `tee` + process substitution) so you can see what `pwn` needs and pass it to `college`.
 
 **Flag:** `pwn.college{wJ8JIqFgspGLAOxw9jsTsVFisMJ.QXxITO0wSN0EzNzEzW}`
