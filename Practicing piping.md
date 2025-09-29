@@ -245,5 +245,153 @@ Intercepted the `pwn` output with `tee` to read the secret, then re-ran with the
 `tee` docs; process substitution notes.
 
 ---
+# Process Substitution & FIFOs — Full Module Writeups
+
+## process-substitution-for-input
+**What the challenge asks:** Use **process substitution** to make the outputs of two commands appear like files, and `diff` those pseudo-files to reveal the added line containing the real flag.
+
+**Flag:** `pwn.college{UOsLFSS6Ls_p6VvA7GGfvApImgi.0lNwMDOxwSN0EzNzEzW}`
+
+WSL terminal session:
+```wsl
+hacker@piping~process-substitution-for-input:~$ diff <( /challenge/print_decoys ) <( /challenge/print_decoys_and_flag )
+64a65
+> pwn.college{UOsLFSS6Ls_p6VvA7GGfvApImgi.0lNwMDOxwSN0EzNzEzW}
+```
+
+### My solve
+I used input process substitution so `diff` could compare **command outputs** as if they were files:
+
+```bash
+diff <( /challenge/print_decoys ) <( /challenge/print_decoys_and_flag )
+```
+
+`bash` replaced each `<(cmd)` with a `/dev/fd/...` path connected to the command's stdout. `diff` printed the extra line in the second stream — that line was the flag.
+
+### What I learned
+- `<(command)` lets you treat command output as a readable file argument.  
+- Useful for tools that accept filenames (like `diff`) so you can compare dynamic outputs without creating temporary files.  
+- Process substitution uses named pipes (e.g., `/dev/fd/63`) under the hood.
+
+### References
+`bash` process substitution documentation; `diff` manpage.
+
+---
+
+## writing-to-multiple-programs
+**What the challenge asks:** Duplicate the output of `/challenge/hack` so the data becomes the **stdin of both** `/challenge/the` and `/challenge/planet` simultaneously (use `tee` + output process substitution).
+
+**Flag:** `pwn.college{snzOsMISgdvaDpcPkEaLYmW-56n.QXwgDN1wSN0EzNzEzW}`
+
+WSL terminal session:
+```wsl
+hacker@piping~writing-to-multiple-programs:~$ /challenge/hack | tee >( /challenge/the ) >( /challenge/planet )
+This secret data must directly and simultaneously make it to /challenge/the and
+/challenge/planet. Don't try to copy-paste it; it changes too fast.
+5756121732687527505
+Congratulations, you have duplicated data into the input of two programs! Here
+is your flag:
+pwn.college{snzOsMISgdvaDpcPkEaLYmW-56n.QXwgDN1wSN0EzNzEzW}
+```
+
+### My solve
+I used `tee` with **output** process substitution `>(cmd)` so `tee` wrote the stream to multiple named pipes (each connected to a command's stdin) while still writing to stdout:
+
+```bash
+/challenge/hack | tee >( /challenge/the ) >( /challenge/planet )
+```
+
+This launched `/challenge/the` and `/challenge/planet` with their stdin attached to the temporary pipes; `tee` duplicated the incoming data into both.
+
+### What I learned
+- `>(command)` makes a writable filename that feeds `command`'s stdin — great for routing a single stream into multiple consumers.  
+- `tee` combined with `>(...)` is a handy way to fan-out data into commands (not just files).
+
+### References
+`tee` manpage; process-substitution notes.
+
+---
+
+## split-piping-stderr-and-stdout
+**What the challenge asks:** Run a program (`/challenge/hack`) that writes to both stdout and stderr, but **route stdout** into `/challenge/planet` and **route stderr** into `/challenge/the` — keeping the streams unmixed.
+
+**Flag:** `pwn.college{QT2jj-Fz1ZIEfiLD4tVeaxbxphl.QXxQDM2wSN0EzNzEzW}`
+
+WSL terminal session:
+```wsl
+hacker@piping~split-piping-stderr-and-stdout:~$ /challenge/hack > >( /challenge/planet ) 2> >( /challenge/the )
+Congratulations, you have learned a redirection technique that even experts
+struggle with! Here is your flag:
+pwn.college{QT2jj-Fz1ZIEfiLD4tVeaxbxphl.QXxQDM2wSN0EzNzEzW}
+```
+
+### My solve
+I combined **output process substitution** and stderr redirection so each stream went to a separate command:
+
+```bash
+/challenge/hack > >( /challenge/planet ) 2> >( /challenge/the )
+```
+
+Explanation:
+- `> >( /challenge/planet )` — redirect stdout into the write-end of a pipe connected to `/challenge/planet`'s stdin.
+- `2> >( /challenge/the )` — redirect stderr into the write-end of a pipe connected to `/challenge/the`'s stdin.
+Because the process substitutions are separate, stdout and stderr remain unmixed but each reaches its intended command.
+
+### What I learned
+- You can route **separate** file descriptors to different process consumers using `>(...)` with `>` and `2>`.  
+- This keeps streams separate (unlike `2>&1 |` which merges them).  
+- Very useful pattern for sophisticated logging or multiplexed pipelines.
+
+### References
+File descriptor redirects, process substitution examples.
+
+---
+
+## fifos (mkfifo / using a FIFO)
+**What the challenge asks:** Create a persistent FIFO at `/tmp/flag_fifo` and redirect `/challenge/run` stdout into it so the program writes the flag into the FIFO. Because FIFOs block until both ends are opened, read the FIFO from another process/terminal to receive the flag.
+
+**Flag:** *(not present in the provided logs — below are the exact commands and an explained solve sequence you can run to get the flag)*
+
+WSL terminals (how to solve — two separate terminals required):
+
+Terminal A (reader — open this first or second; it will block until writer writes):
+```wsl
+# create the FIFO (one-time)
+mkfifo /tmp/flag_fifo
+
+# read from the FIFO (this will block until something writes)
+cat /tmp/flag_fifo
+# — after writer runs, cat will print the flag that /challenge/run writes
+```
+
+Terminal B (writer):
+```wsl
+# run the challenge and have it write its stdout into the FIFO
+/challenge/run > /tmp/flag_fifo
+# The challenge will write the flag into the FIFO; the reader will receive it and display it.
+```
+
+### My solve (step-by-step)
+1. **Create FIFO** (once): `mkfifo /tmp/flag_fifo` — this creates a named pipe at that path.  
+2. **Open a reader** on the FIFO (terminal A): `cat /tmp/flag_fifo` — this blocks and waits for data.  
+3. **Run the challenge** on another terminal (terminal B): `/challenge/run > /tmp/flag_fifo` — when the challenge writes to stdout, data goes into the FIFO and the reader immediately receives it and prints it.  
+4. After the reader prints the flag, you can `rm /tmp/flag_fifo` to remove the FIFO.
+
+Why FIFOs?  
+- They are persistent named pipes on the filesystem (unlike process-substitution pipes).  
+- Writers block until a reader is present (and vice-versa), which synchronizes producers and consumers without creating files on disk.
+
+### What I learned
+- `mkfifo` creates a named FIFO you can open by path.  
+- Writing to the FIFO (`> fifo`) blocks until a reader has opened the pipe; reading blocks until a writer is present.  
+- Useful for inter-process coordination when you need named endpoints on the filesystem.
+
+### References
+`mkfifo` manpage; UNIX named pipe / FIFO documentation.
+
+---
+
+
+
 
 
