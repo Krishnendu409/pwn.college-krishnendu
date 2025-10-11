@@ -1,6 +1,6 @@
 # the-path-variable
 
-type: run a command with an empty PATH to avoid external commands
+type: run a command with an empty PATH to prevent external commands from running
 
 ## My solve
 
@@ -18,17 +18,17 @@ pwn.college{0KJyOIkSd_-FFtL_0L_IX4Efk8O.QX2cDM1wSN0EzNzEzW}
 
 ### My solve
 
-Cleared `PATH` before running the harness so shell builtins were used and external `rm` couldn't be found. The harness failed to delete `/flag` and printed the flag.
+Cleared `PATH` before launching the harness. The script attempted to call `rm` but no external `rm` was found and the harness failed to delete `/flag`, then printed the flag.
 
 ### What I learned
 
-An empty `PATH` prevents execution of external commands found in directories. Useful to neutralize scripts that call external programs by name.
+An empty `PATH` disables lookup of external commands. This neutralizes scripts that call external binaries by name.
 
 ---
 
 # setting-path
 
-type: set PATH to include a directory with helper commands used by the harness
+type: set PATH to a provided directory so the harness uses the intended helper
 
 ## My solve
 
@@ -45,17 +45,17 @@ pwn.college{UGVUvrVC5XT7I6GuXGyMKXPtNPY.QX1cjM1wSN0EzNzEzW}
 
 ### My solve
 
-Set `PATH` to a directory provided by the challenge that contains the expected helper `win`. Running the harness caused it to locate `win` there and print the flag.
+Temporarily pointed `PATH` at `/challenge/more_commands` so the harness found the expected `win` helper and executed it.
 
 ### What I learned
 
-Temporarily overriding `PATH` changes command resolution order and can redirect a program to use alternative binaries in controlled dirs.
+Overriding `PATH` lets you choose which binaries a script will run. Use it to control execution in a sandboxed environment.
 
 ---
 
 # finding-commands
 
-type: locate a command with `which`, inspect its directory, and read associated files
+type: locate a binary with `which`, inspect its directory, and read nearby files
 
 ## My solve
 
@@ -75,17 +75,17 @@ pwn.college{8IGzmkgd7-BKTJ8bcuL-2xlmXCc.01NzEzNxwSN0EzNzEzW}
 
 ### My solve
 
-Used `which` to find the absolute path of `win`, extracted its directory with `dirname`, then read the `flag` file located there.
+Used `which` to find the absolute path of `win`, extracted its directory with `dirname`, then read the `flag` file located in that directory.
 
 ### What I learned
 
-`which` and `dirname` help locate related files. Many challenges hide flags near helper binaries.
+`which` and `dirname` are useful to locate helper binaries and nearby resources. Flags are often colocated with helper scripts.
 
 ---
 
 # adding-commands
 
-type: create a custom executable and add it to PATH to override behavior
+type: add a custom command to a directory and point PATH at it
 
 ## My solve
 
@@ -108,16 +108,54 @@ pwn.college{smTo9tK4zJcqf9V-XXlBphz-_6I.QX2cjM1wSN0EzNzEzW}
 
 ### My solve
 
-Wrote a small `win` script that prints `/flag`. Placed it in `~/mybin`, set it executable, then ran the harness with `PATH` pointing to that directory so the harness executed the custom script.
+Created a small `win` wrapper that reads and prints `/flag`. Made it executable and ran the harness with `PATH` set to include that directory so the harness executed the custom `win`.
 
 ### What I learned
 
-Creating custom commands and pointing `PATH` at them allows you to intercept expected calls by a program. This is essential for binary-hijack style challenges.
+You can supply your own binaries/scripts and force a program to execute them by placing them earlier in `PATH`.
+
+---
+
+# hijacking-commands
+
+type: override dangerous commands by placing a fake in your `PATH` to intercept calls
+
+## My solve
+
+**Flag:** `pwn.college{MGYl7_XMDIdaVaeTm58Rz-VXkml.QX3cjM1wSN0EzNzEzW}`
+
+WSL terminal session:
+
+```bash
+hacker@path~hijacking-commands:~$ mkdir -p ~/mybin
+cat > ~/mybin/rm <<'EOF'
+#!/bin/bash
+for f in "$@"; do
+  [ -e "$f" ] && cat "$f"
+done
+exit 1
+EOF
+chmod +x ~/mybin/rm
+export PATH="$HOME/mybin:$PATH"
+# run the challenge; your fake rm will be used
+/challenge/run
+Trying to remove /flag...
+Found 'rm' command at /home/hacker/mybin/rm. Executing!
+pwn.college{MGYl7_XMDIdaVaeTm58Rz-VXkml.QX3cjM1wSN0EzNzEzW}
+```
+
+### My solve
+
+Wrote a fake `rm` that cats files instead of removing them. Prepending `~/mybin` to `PATH` ensured the harness used the fake `rm`, which revealed the flag.
+
+### What I learned
+
+Hijacking commonly used commands in `PATH` can subvert scripts. Always validate `PATH` in untrusted environments and avoid trusting external command names.
 
 ---
 
 ## References
 
-* `man bash` (command lookup and PATH behavior)
-* `man which`
-* `dirname` utility notes
+* `man bash` (PATH lookup)
+* `which` and `dirname` utilities
+* Basics of command hijacking and sandbox hardening
